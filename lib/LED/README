@@ -1,0 +1,10 @@
+LED Library 
+
+    STATE           | COLOR
+  ----------------|--------
+  LAUNCH_PAD_IDLE | red
+  ASCENT          | green
+  DESCENT         | blue
+  LANDED          | yellow
+
+nothing much...
