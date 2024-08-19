@@ -1,26 +1,69 @@
 #include "KalmanFilter.h"
 
-using namespace std;
+Kalman::Kalman() {
 
-double KALMAN(double U);
+    Q_angle = 0.001f;
+    Q_bias = 0.003f;
+    R_measure = 0.03f;
 
-//Kalman Filter function
+    angle = 0.0f; // Reset the angle
+    bias = 0.0f; // Reset bias
 
-double KALMAN(double U) {
+    P[0][0] = 0.0f; 
+    P[0][1] = 0.0f;
+    P[1][0] = 0.0f;
+    P[1][1] = 0.0f;
+};
 
-    static const double R = 40; //noise covariance
-    static const double H = 1.00; // measurement map scalar
-    static double Q = 10; //initial stimated covariance
-    static double P = 0; //initial error covariance (0)
-    static double U_hat = 0; //initial estimated state (here we dont know?)
-    static double K = 0;
+// The angle should be in degrees and the rate should be in degrees per second and the delta time in seconds
+float Kalman::getAngle(float newAngle, float newRate, float dt) {
 
-    K = P*H/(H*P*H+R); //updates kalman gain
-    U_hat = U_hat + K*(U-H*U_hat); //updates estimated state
+    // Discrete Kalman filter time update equations 
+    // Update xhat - Project the state ahead
+    rate = newRate - bias;
+    angle += dt * rate;
 
-    P = (1-K*H)*P+Q; //updates error covariance
+    // Update estimation error covariance - Project the error covariance ahead
+    P[0][0] += dt * (dt*P[1][1] - P[0][1] - P[1][0] + Q_angle);
+    P[0][1] -= dt * P[1][1];
+    P[1][0] -= dt * P[1][1];
+    P[1][1] += Q_bias * dt;
 
-    return U_hat;
+    // Discrete Kalman filter measurement update equations 
+    // Calculate Kalman gain 
+    float S = P[0][0] + R_measure; // Estimate error
 
-}
+    float K[2]; // Kalman gain 
+    K[0] = P[0][0] / S;
+    K[1] = P[1][0] / S;
 
+    // Calculate angle and bias - Update estimate with measurement zk (newAngle)
+    float y = newAngle - angle; // Angle difference
+
+    angle += K[0] * y;
+    bias += K[1] * y;
+
+    // Calculate estimation error covariance - Update the error covariance
+
+    float P00_temp = P[0][0];
+    float P01_temp = P[0][1];
+
+    P[0][0] -= K[0] * P00_temp;
+    P[0][1] -= K[0] * P01_temp;
+    P[1][0] -= K[1] * P00_temp;
+    P[1][1] -= K[1] * P01_temp;
+
+    return angle;
+};
+
+void Kalman::setAngle(float angle) { this->angle = angle; }; // Used to set angle, this should be set as the starting angle
+float Kalman::getRate() { return this->rate; }; // Return the unbiased rate
+
+/* These are used to tune the Kalman filter */
+void Kalman::setQangle(float Q_angle) { this->Q_angle = Q_angle; };
+void Kalman::setQbias(float Q_bias) { this->Q_bias = Q_bias; };
+void Kalman::setRmeasure(float R_measure) { this->R_measure = R_measure; };
+
+float Kalman::getQangle() { return this->Q_angle; };
+float Kalman::getQbias() { return this->Q_bias; };
+float Kalman::getRmeasure() { return this->R_measure; };
