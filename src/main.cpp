@@ -56,6 +56,7 @@ Rocket rocket;
 void loop() {
 
     rocket.updateSensors();
+    
 
     /*Serial.print("Temperature: ");
     Serial.print(rocket.temperature);

@@ -7,7 +7,7 @@
 //#include <Servo.h>
 #include "MPU.h"
 //#include "BMP.h"
-//#include "PID.h"
+#include "PID.h"
 //#include "SDCard.h"
 #include "Vector3.h"
 
@@ -57,6 +57,10 @@ private:
     unsigned long currentTime = 0.0;
     unsigned long previousTime = 0.0;
     float deltaTime = 0.0f;
+
+    PID yPID = PID(0.6f, 0.05f, 0.125f, 10.0f);
+    // PID-Controller for calculation of motor mount orientation on z-axis
+    PID zPID = PID(0.6f, 0.05f, 0.125f, 10.0f);
 
 };
 

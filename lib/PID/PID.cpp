@@ -6,7 +6,6 @@ PID::PID(float Kp, float Ki, float Kd, float saturation) {
   this->Kd = Kd;
   this->saturation = saturation;
 
-  // Initialize other variables
   this->deltaTime = 0.0f;
   this->error = 0.0f;
   this->errorIntegral = 0.0f;

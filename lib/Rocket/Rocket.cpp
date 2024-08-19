@@ -28,6 +28,16 @@ void Rocket::updateSensors() {
     double kalAngleX = kalmanX.getAngle(euler.x, gyroXrate, dt);
     double kalAngleY = kalmanY.getAngle(euler.y, gyroYrate, dt);
 
+    float xPIDoutput = yPID.update(0, kalAngleX);
+    float yPIDoutput = zPID.update(0, kalAngleY);
+
+    // Convert the relative orientation in rad to deg
+    //xPIDoutput = xPIDoutput * RAD2DEG;
+    //yPIDoutput = yPIDoutput * RAD2DEG;
+
+
+
+
     /*
     Serial.print(orientation.w);
     Serial.print(",");
@@ -38,9 +48,20 @@ void Rocket::updateSensors() {
     Serial.println(orientation.z);
     */
 
-   Serial.print(kalAngleX);
-   Serial.print(",");
-   Serial.println(kalAngleY);
+    Serial.print("kalAngleX:"); 
+    Serial.print(kalAngleX); 
+    Serial.print(","); 
+
+    Serial.print("kalAngleY:"); 
+    Serial.print(kalAngleY); 
+    Serial.print(","); 
+
+    Serial.print("xPIDoutput:"); 
+    Serial.print(xPIDoutput); 
+    Serial.print(","); 
+
+    Serial.print("yPIDoutput:"); 
+    Serial.println(yPIDoutput);
 
 
     // Get sensor data from BMP 
